@@ -6,14 +6,6 @@
 
 
 #let draw-fifo-shape(id, tl, tr, br, bl, fill, stroke) = {
-  //let p0 = tl
-  //let p1 = (tr, 10%, br)
-  //let p2 = (tr, 90%, br)
-  //let p3 = bl
-  //let p4 = (tl, 55%, bl)
-  //let p5 = (tl, 50%, br)
-  //let p6 = (tl, 45%, bl)
-
   let p0 = tl
   let p1 = (tl, 50%, tr)
   let p2 = (tl, 75%, tr)

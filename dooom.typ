@@ -41,7 +41,7 @@
       x:(rel: 2, to: "Fetch.east"), y:(from: "Fetch-port-Req", to: "In"),
       w: 3, h: 1.5,
       id: "L1i",
-      name: "L1i",
+      name: text(fill: white, "L1i"),
       fill: blue,
       ports: (
         west: (
@@ -138,6 +138,13 @@
     )
 
     element.block(
+      x: -3.25, y: -6.25, w: 10.5, h: 2,
+      id: "IQ",
+      fill: maroon.lighten(70%),
+      ports: (west: ((id: "WB"),))
+    )
+
+    element.block(
       x:-3, y: -6,
       w: 3, h: 1.5,
       id: "IQ1",
@@ -215,7 +222,7 @@
     )
 
     wire.wire(
-      "RobToIQ1",
+      "RobToIQ",
       ("ROB-port-ALU", "IQ1-port-In"),
       directed: true,
     )
@@ -266,7 +273,7 @@
       x:(rel: 2, to: "LSU.east"), y:(from: "LSU-port-Req", to: "In"),
       w: 3, h: 1.5,
       id: "L1d",
-      name: "L1d",
+      name: text(fill: white, "L1d"),
       fill: blue,
       ports: (
         west: (
@@ -357,33 +364,33 @@
 
     wire.wire(
       "LSUWakeup",
-      ("LSU-port-Out", "IQ1-port-WB"),
+      ("LSU-port-Out", "IQ-port-WB"),
       directed: true,
       style: "dodge",
       dodge-sides: ("north", "west"),
       dodge-y: -11,
-      dodge-margins: (0, 2),
+      dodge-margins: (0, 1.75),
       name: "Wakeup",
       name-pos: "end"
     )
 
     wire.wire(
       "ALUWakeup",
-      ("ALU-port-Out", "IQ1-port-WB"),
+      ("ALU-port-Out", "IQ-port-WB"),
       directed: true,
       style: "dodge",
       dodge-sides: ("north", "west"),
       dodge-y: -11,
-      dodge-margins: (0, 2),
+      dodge-margins: (0, 1.75),
     )
 
     wire.wire(
       "ControlWakeup",
-      ("Control-port-Out", "IQ1-port-WB"),
+      ("Control-port-Out", "IQ-port-WB"),
       directed: true,
       style: "dodge",
       dodge-sides: ("north", "west"),
       dodge-y: -11,
-      dodge-margins: (0, 2),
+      dodge-margins: (0, 1.75),
     )
   })};
