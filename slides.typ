@@ -131,6 +131,95 @@
   ])
 ]
 
+#let rt_boxes = cetz.canvas({
+    import cetz.draw: *
+
+    let bounds(x,y,z) = {
+      let min_x = calc.min(x.at(0), y.at(0), z.at(0))-0.2
+      let min_y = calc.min(x.at(1), y.at(1), z.at(1))-0.2
+      let max_x = calc.max(x.at(0), y.at(0), z.at(0))+0.2
+      let max_y = calc.max(x.at(1), y.at(1), z.at(1))+0.2
+      ((min_x, min_y), (max_x, max_y))
+    }
+
+    let merge(b1, b2) = {
+      let ((min1_x, min1_y),(max1_x, max1_y)) = b1
+      let ((min2_x, min2_y),(max2_x, max2_y)) = b2
+      (
+        (calc.min(min1_x, min2_x)-0.2, calc.min(min1_y, min2_y)-0.2),
+        (calc.max(max1_x, max2_x)+0.2, calc.max(max1_y, max2_y)+0.2)
+      )
+    }
+
+    let (a, b, c) = ((-1,1), (2,0), (0.4,-1))
+    let bounds_abc = bounds(a, b, c)
+
+    let (d, e, f) = ((2,0), (4,0), (0,5))
+    let bounds_def = bounds(d, e, f)
+
+    let (g, h, i) = ((5,3), (3,3), (8,6))
+    let bounds_ghi = bounds(g, h, i)
+
+    let bounds_abcdef = merge(bounds_abc, bounds_def)
+    let bounds_abcdefghi = merge(bounds_abcdef, bounds_ghi)
+
+
+    line(a,b,c,a, fill: blue, stroke: blue, name: "A")
+    line(d,e,f,d, fill: blue, stroke: blue, name: "B")
+    line(g,h,i,g, fill: blue, stroke: blue, name: "C")
+    rect(
+      bounds_ghi.at(0),
+      bounds_ghi.at(1),
+      stroke: (thickness: 2pt)
+    )
+    rect(
+      bounds_abc.at(0),
+      bounds_abc.at(1),
+      stroke: (thickness: 2pt),
+    )
+    rect(
+      bounds_abcdefghi.at(0),
+      bounds_abcdefghi.at(1),
+      stroke: (thickness: 2pt, paint: olive),
+    )
+    rect(
+      bounds_abcdef.at(0),
+      bounds_abcdef.at(1),
+      stroke: (thickness: 2pt, paint: olive),
+    )
+    rect(
+      bounds_def.at(0),
+      bounds_def.at(1),
+      stroke: (thickness: 2pt, paint: olive),
+    )
+
+    content("A.centroid", text(size: 25pt, fill: black, [A]))
+    content("B.centroid", text(size: 25pt, fill: black, [B]))
+    content("C.centroid", text(size: 25pt, fill: black, [C]))
+
+    line((-3,2.5), (10, 2), stroke: (paint: red, thickness: 2pt), mark: (end: ">"))
+  })
+
+#let rt_tree = cetz.canvas({
+    import cetz.tree
+    import cetz.draw: *
+    tree.tree(
+      grow: 1.5,
+      spread: 2.5,
+      ([h], ([h], ([m], [mA]), ([h], [hB])), ([m], [mC])),
+      draw-node: (node, ..) => {
+        let hit = node.content.text.at(0) == "h"
+        let c = if hit {olive} else {black}
+        circle((), radius: .5, fill: c, stroke: none)
+        content((), text(white, node.content.text.slice(1)))
+      },
+      draw-edge: (from, to, ..) => {
+        let (a, b) = (from + ".center", to + ".center")
+        line((a, .4, b), (b, .4, a))
+      },
+    )
+  })
+
 #slide[
   = Bonding Volume Hierarchy
 
@@ -138,100 +227,58 @@
   #grid(
     columns: 2,
 
-    cetz.canvas({
-      import cetz.draw: *
-
-      let bounds(x,y,z) = {
-        let min_x = calc.min(x.at(0), y.at(0), z.at(0))-0.2
-        let min_y = calc.min(x.at(1), y.at(1), z.at(1))-0.2
-        let max_x = calc.max(x.at(0), y.at(0), z.at(0))+0.2
-        let max_y = calc.max(x.at(1), y.at(1), z.at(1))+0.2
-        ((min_x, min_y), (max_x, max_y))
-      }
-
-      let merge(b1, b2) = {
-        let ((min1_x, min1_y),(max1_x, max1_y)) = b1
-        let ((min2_x, min2_y),(max2_x, max2_y)) = b2
-        (
-          (calc.min(min1_x, min2_x)-0.2, calc.min(min1_y, min2_y)-0.2),
-          (calc.max(max1_x, max2_x)+0.2, calc.max(max1_y, max2_y)+0.2)
-        )
-      }
-
-      let (a, b, c) = ((-1,1), (2,0), (0.4,-1))
-      let bounds_abc = bounds(a, b, c)
-
-      let (d, e, f) = ((2,0), (4,0), (0,5))
-      let bounds_def = bounds(d, e, f)
-
-      let (g, h, i) = ((5,3), (3,3), (8,6))
-      let bounds_ghi = bounds(g, h, i)
-
-      let bounds_abcdef = merge(bounds_abc, bounds_def)
-      let bounds_abcdefghi = merge(bounds_abcdef, bounds_ghi)
-
-
-      line(a,b,c,a, fill: blue, stroke: blue, name: "A")
-      line(d,e,f,d, fill: blue, stroke: blue, name: "B")
-      line(g,h,i,g, fill: blue, stroke: blue, name: "C")
-      rect(
-        bounds_ghi.at(0),
-        bounds_ghi.at(1),
-        stroke: (thickness: 2pt)
-      )
-      rect(
-        bounds_abc.at(0),
-        bounds_abc.at(1),
-        stroke: (thickness: 2pt),
-      )
-      rect(
-        bounds_abcdefghi.at(0),
-        bounds_abcdefghi.at(1),
-        stroke: (thickness: 2pt, paint: olive),
-      )
-      rect(
-        bounds_abcdef.at(0),
-        bounds_abcdef.at(1),
-        stroke: (thickness: 2pt, paint: olive),
-      )
-      rect(
-        bounds_def.at(0),
-        bounds_def.at(1),
-        stroke: (thickness: 2pt, paint: olive),
-      )
-
-      content("A.centroid", text(size: 25pt, fill: black, [A]))
-      content("B.centroid", text(size: 25pt, fill: black, [B]))
-      content("C.centroid", text(size: 25pt, fill: black, [C]))
-
-      line((-3,2.5), (10, 2), stroke: (paint: red, thickness: 2pt), mark: (end: ">"))
-    }),
+    rt_boxes,
     [
       En utilisant $3$ intersections rayon/box on peut déterminer que seulement une des
       intersections rayon/triangle est nécessaire au lieu de $3$!
-      #align(center,
-        cetz.canvas({
-          import cetz.tree
-          import cetz.draw: *
-          tree.tree(
-            grow: 1.5,
-            spread: 2.5,
-            ([h], ([h], ([m], [mA]), ([h], [hB])), ([m], [mC])),
-            draw-node: (node, ..) => {
-              let hit = node.content.text.at(0) == "h"
-              let c = if hit {olive} else {black}
-              circle((), radius: .5, fill: c, stroke: none)
-              content((), text(white, node.content.text.slice(1)))
-            },
-            draw-edge: (from, to, ..) => {
-              let (a, b) = (from + ".center", to + ".center")
-              line((a, .4, b), (b, .4, a))
-            },
-          )
-        })
-      )
+      #align(center, rt_tree)
     ]
   )
+]
+
+#slide[
+  = Bonding Volume Hierarchy
+
+  #v(1cm)
+
+  #toolbox.side-by-side[
+    ```python
+    def intersect_tree(root, rayon):
+      currentHit = inf
+      stack = [root]
+
+      while !stack.empty():
+        node = stack.pop()
+        t = node.box.intersect(rayon)
+
+        if t < currentHit and node.leaf():
+          currentHit =
+            min(currentHit, node.tri.intersect(rayon))
+
+        if t < currentHit and !node.leaf():
+          stack.append(node.rightChild)
+          stack.append(node.leftChild)
+    ```
+  ][
+    #v(-3cm)
+    #align(center, grid(columns: 2, gutter: 2cm, scale(70%, [#v(-1cm) #rt_boxes]), scale(100%, rt_tree)))
+    #v(-1cm)
+    #align(center, table(
+      columns: 5,
+      fill: (x, y) => if x == 0 or y == 0 { gray.lighten(20%) } else { gray.lighten(50%) },
+      stroke: none,
+      gutter: 0.2cm,
+      align: horizon,
+      //gutter: 1cm,
+      inset: 0.4cm,
+      [time], [stack], [node], [currentHit], [t],
+      [$t_0$], [{ABC}], [ABC], [inf], [5],
+      [$t_1$], [{AB, C}], [C], [inf], [inf],
+      [$t_2$], [{AB}], [AB], [inf], [5],
+      [$t_3$], [{A, B}], [B], [inf], [6],
+      [$t_4$], [{A}], [A], [7], [inf],
+    ))
+  ]
 ]
 
 #slide[
